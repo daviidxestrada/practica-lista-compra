@@ -2,7 +2,20 @@ document.addEventListener("DOMContentLoaded", () =>{
   const campoArticulo = document.getElementById("articulo");
   const botonArticulo = document.getElementById("nuevoArticulo");
   const lista = document.getElementById("lista")
+  const botonNuevaLista = document.getElementById("nuevaLista")
 
+  let listaCompra = [];
+
+  const datosGuardados = localStorage.getItem("listaCompra")
+  if(datosGuardados){
+    listaCompra = JSON.parse(datosGuardados);
+    lista.innerHTML = "";
+    for (const item of listaCompra){
+        agregarArticulo(item.nombre)
+    }
+  }
+
+  window.listaCompra = listaCompra;
 
   function onInputKeyUp(){
     const hayTexto = campoArticulo.value.trim().length > 0;
@@ -25,7 +38,8 @@ document.addEventListener("DOMContentLoaded", () =>{
     const nombre = campoArticulo.value.trim();
     if (nombre.length === 0) return 
     
-
+    listaCompra.push({nombre});
+    localStorage.setItem("listaCompra",JSON.stringify(listaCompra));
     agregarArticulo(nombre);
 
     //limpiar UI
@@ -34,6 +48,16 @@ document.addEventListener("DOMContentLoaded", () =>{
     campoArticulo.focus();
    }
 
+   function onNuevaListaClick(){
+    const confirmar = window.confirm("¿Seguro que quieres borrar toda la lista?")
+    if (!confirmar) return;
+    
+    listaCompra = [];
+    localStorage.removeItem("listaCompra")
+    lista.innerHTML = "<li>No hay nada que comprar</li>"
+   }
+
   campoArticulo.addEventListener("keyup", onInputKeyUp)
   botonArticulo.addEventListener("click", onNuevoArticuloClick);
+  botonNuevaLista.addEventListener("click", onNuevaListaClick)
 });
